@@ -2,9 +2,16 @@
 
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
+import 'package:shopping_cart/controller/db_helper.dart';
+import 'package:shopping_cart/models/cart_model.dart';
+import 'package:shopping_cart/provider/cart_provider.dart';
 
 class ProductListScreen extends StatelessWidget {
   ProductListScreen({Key? key}) : super(key: key);
+
+  DbHelper dbHelper = DbHelper();
 
   List<String> productName = [
     'Banana',
@@ -37,6 +44,7 @@ class ProductListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -45,9 +53,13 @@ class ProductListScreen extends StatelessWidget {
         actions: [
           Center(
             child: Badge(
-              badgeContent: Text(
-                "0",
-                style: TextStyle(color: Colors.white),
+              badgeContent: Consumer<CartProvider>(
+                builder: (context, value, child) {
+                  return Text(
+                    value.getCounter().toString(),
+                    style: TextStyle(color: Colors.white),
+                  );
+                },
               ),
               child: Icon(Icons.shopping_bag_outlined),
             ),
@@ -96,7 +108,36 @@ class ProductListScreen extends StatelessWidget {
                               ),
                               SizedBox(height: 5),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  dbHelper
+                                      .insert(
+                                    CartModel(
+                                      id: index,
+                                      productId: index.toString(),
+                                      productName: productName[index],
+                                      initialPrice: productPrice[index],
+                                      productPrice: productPrice[index],
+                                      quantity: 1,
+                                      unitTag: productUnit[index],
+                                      image: productImage[index],
+                                    ),
+                                  )
+                                      .then(
+                                    (value) {
+                                      Fluttertoast.showToast(
+                                          msg: "Product is added");
+                                      cartProvider.addTotalPrice(
+                                        productPrice: double.parse(
+                                          productPrice[index].toString(),
+                                        ),
+                                      );
+                                      cartProvider.addCounter();
+                                    },
+                                  ).onError((error, stackTrace) {
+                                    Fluttertoast.showToast(
+                                        msg: "Already added",);
+                                  });
+                                },
                                 child: Container(
                                   height: 35,
                                   width: 120,
