@@ -53,4 +53,15 @@ class DbHelper {
     var dbClient = await db;
     return await dbClient!.delete('cart', where: 'id = ?', whereArgs: [id]);
   }
+
+  //for upadate product quantity
+  Future<int> updateQuantity({required CartModel cartModel}) async {
+    var dbClient = await db;
+    return await dbClient!.update(
+      'cart',
+      cartModel.toMap(),
+      where: 'id = ?',
+      whereArgs: [cartModel.id]
+    );
+  }
 }
