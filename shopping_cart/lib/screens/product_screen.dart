@@ -67,7 +67,7 @@ class ProductListScreen extends StatelessWidget {
                       value.getCounter().toString(),
                       style: TextStyle(color: Colors.white),
                     );
-                  },
+                  },              
                 ),
                 child: Icon(Icons.shopping_bag_outlined),
               ),
