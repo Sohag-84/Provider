@@ -1,11 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shopping_cart/controller/db_helper.dart';
+import 'package:shopping_cart/models/cart_model.dart';
 
 class CartProvider with ChangeNotifier {
   int _countItem = 0;
+  DbHelper dbHelper = DbHelper();
+
   int get countItem => _countItem;
   double _totalPrice = 0.0;
   double get totalPrice => _totalPrice;
+
+  late Future<List<CartModel>> _cart;
+  Future<List<CartModel>> getData() async {
+    _cart = dbHelper.getCartList();
+    return _cart;
+  }
 
   //shared preference for store cart item
   void _setPrefItems() async {

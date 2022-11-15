@@ -15,17 +15,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => CartProvider(),
-      builder: (context, child) {
-        return MaterialApp(
-          title: 'Shopping Cart',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: ProductListScreen(),
-        );
-      },
+      create: (context) => CartProvider(),
+      child: Builder(
+        builder: (context) {
+          return MaterialApp(
+            title: 'Shopping Cart',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            home: ProductListScreen(),
+          );
+        },
+      ),
     );
   }
 }

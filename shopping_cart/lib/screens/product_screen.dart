@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shopping_cart/controller/db_helper.dart';
 import 'package:shopping_cart/models/cart_model.dart';
 import 'package:shopping_cart/provider/cart_provider.dart';
+import 'package:shopping_cart/screens/cart_screen.dart';
 
 class ProductListScreen extends StatelessWidget {
   ProductListScreen({Key? key}) : super(key: key);
@@ -51,17 +52,25 @@ class ProductListScreen extends StatelessWidget {
         title: Text("Product list"),
         centerTitle: true,
         actions: [
-          Center(
-            child: Badge(
-              badgeContent: Consumer<CartProvider>(
-                builder: (context, value, child) {
-                  return Text(
-                    value.getCounter().toString(),
-                    style: TextStyle(color: Colors.white),
-                  );
-                },
+          InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CartScreen(),
               ),
-              child: Icon(Icons.shopping_bag_outlined),
+            ),
+            child: Center(
+              child: Badge(
+                badgeContent: Consumer<CartProvider>(
+                  builder: (context, value, child) {
+                    return Text(
+                      value.getCounter().toString(),
+                      style: TextStyle(color: Colors.white),
+                    );
+                  },
+                ),
+                child: Icon(Icons.shopping_bag_outlined),
+              ),
             ),
           ),
           SizedBox(width: 20)
@@ -114,12 +123,13 @@ class ProductListScreen extends StatelessWidget {
                                     CartModel(
                                       id: index,
                                       productId: index.toString(),
-                                      productName: productName[index],
+                                      productName:
+                                          productName[index].toString(),
                                       initialPrice: productPrice[index],
                                       productPrice: productPrice[index],
                                       quantity: 1,
-                                      unitTag: productUnit[index],
-                                      image: productImage[index],
+                                      unitTag: productUnit[index].toString(),
+                                      image: productImage[index].toString(),
                                     ),
                                   )
                                       .then(
@@ -133,10 +143,11 @@ class ProductListScreen extends StatelessWidget {
                                       );
                                       cartProvider.addCounter();
                                     },
-                                  ).onError((error, stackTrace) {
-                                    Fluttertoast.showToast(
-                                        msg: "Already added",);
-                                  });
+                                  ).onError(
+                                    (error, stackTrace) {
+                                      print(error.toString());
+                                    },
+                                  );
                                 },
                                 child: Container(
                                   height: 35,

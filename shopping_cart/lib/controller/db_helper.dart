@@ -36,4 +36,12 @@ class DbHelper {
     );
     return cartModel;
   }
+
+  //for database query
+  Future<List<CartModel>> getCartList() async {
+    var dbClient = await db;
+    final List<Map<dynamic, Object?>> queryResult =
+        await dbClient!.query('cart');
+    return queryResult.map((e) => CartModel.fromMap(e)).toList();
+  }
 }
