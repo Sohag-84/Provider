@@ -1,13 +1,16 @@
-// ignore_for_file: prefer_const_constructors, prefer_interpolation_to_compose_strings
+// ignore_for_file: prefer_const_constructors, prefer_interpolation_to_compose_strings, must_be_immutable
 
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_cart/controller/db_helper.dart';
 import 'package:shopping_cart/models/cart_model.dart';
 import 'package:shopping_cart/provider/cart_provider.dart';
 
 class CartScreen extends StatelessWidget {
-  const CartScreen({Key? key}) : super(key: key);
+  CartScreen({Key? key}) : super(key: key);
+
+  DbHelper dbHelper = DbHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +49,6 @@ class CartScreen extends StatelessWidget {
                       var data = snapshot.data![index];
                       return Card(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -60,47 +61,71 @@ class CartScreen extends StatelessWidget {
                                   width: 100,
                                 ),
                                 SizedBox(width: 10),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      data.productName.toString(),
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text(
-                                      data.unitTag.toString() +
-                                          " " +
-                                          r"$" +
-                                          data.productPrice.toString(),
-                                    ),
-                                    SizedBox(height: 5),
-                                    InkWell(
-                                      onTap: () {},
-                                      child: Container(
-                                        height: 35,
-                                        width: 120,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          color: Colors.green,
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            "Add to cart",
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            data.productName.toString(),
                                             style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 17,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          InkWell(
+                                              onTap: () {
+                                                dbHelper.delete(
+                                                    id: snapshot
+                                                        .data![index].id!);
+                                                cartProvider.removeCounter();
+                                                cartProvider.removeTotalPrice(
+                                                  productPrice: double.parse(
+                                                    data.productPrice
+                                                        .toString(),
+                                                  ),
+                                                );
+                                              },
+                                              child: Icon(Icons.delete)),
+                                        ],
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        data.unitTag.toString() +
+                                            " " +
+                                            r"$" +
+                                            data.productPrice.toString(),
+                                      ),
+                                      SizedBox(height: 5),
+                                      InkWell(
+                                        onTap: () {},
+                                        child: Container(
+                                          height: 35,
+                                          width: 120,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            color: Colors.green,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              "Add to cart",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 17,
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                )
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -117,9 +142,14 @@ class CartScreen extends StatelessWidget {
             builder: (context, value, child) {
               return Column(
                 children: [
-                  ReusableWidget(
-                    title: "Sub total",
-                    value: r"$" + value.getTotalPrice().toStringAsFixed(2),
+                  Visibility(
+                    visible: value.getTotalPrice().toStringAsFixed(2) == '0.00'
+                        ? false
+                        : true,
+                    child: ReusableWidget(
+                      title: "Sub total",
+                      value: r"$" + value.getTotalPrice().toStringAsFixed(2),
+                    ),
                   ),
                 ],
               );

@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:shopping_cart/models/cart_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,6 +14,7 @@ class DbHelper {
       return _db!;
     }
     _db = await initDatabase();
+    return null;
   }
 
   initDatabase() async {
@@ -43,5 +46,11 @@ class DbHelper {
     final List<Map<dynamic, Object?>> queryResult =
         await dbClient!.query('cart');
     return queryResult.map((e) => CartModel.fromMap(e)).toList();
+  }
+
+  //for delete product
+  Future<int> delete({required int id}) async {
+    var dbClient = await db;
+    return await dbClient!.delete('cart', where: 'id = ?', whereArgs: [id]);
   }
 }
